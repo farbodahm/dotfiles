@@ -15,8 +15,11 @@ jobs:
       - name: Run ShellCheck
         uses: ludeeus/action-shellcheck@master
         with:
+          # Only check .sh files, not zsh configs
           scandir: '.'
+          format: tty
           severity: warning
+          ignore_paths: zsh
 
   validate-configs:
     name: Validate Configs
