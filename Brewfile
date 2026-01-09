@@ -1,4 +1,4 @@
-# Taps
+# Common packages (macOS and Linux)
 tap "homebrew/bundle"
 
 # CLI Tools
@@ -9,15 +9,3 @@ brew "htop"
 brew "nvm"
 brew "go"
 brew "gpg"
-
-# Terminal
-cask "wezterm"
-
-# Editors
-cask "zed"
-
-# Optional: Add more packages you use
-# brew "ripgrep"
-# brew "fzf"
-# brew "jq"
-# brew "tmux"

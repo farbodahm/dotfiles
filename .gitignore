@@ -1,13 +1,13 @@
 # OS
 .DS_Store
 
-# Sensitive files - never commit these
+# Sensitive files
 *.pem
 *.key
 *credentials*
 *secrets*
 
-# Local overrides (for machine-specific settings)
+# Local overrides
 *.local
 
 # Neovim generated files

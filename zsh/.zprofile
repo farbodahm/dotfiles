@@ -1,2 +1,8 @@
-
-eval "$(/opt/homebrew/bin/brew shellenv)"
+# Homebrew setup (macOS only)
+if [[ "$(uname)" == "Darwin" ]]; then
+    if [[ -f "/opt/homebrew/bin/brew" ]]; then
+        eval "$(/opt/homebrew/bin/brew shellenv)"
+    elif [[ -f "/usr/local/bin/brew" ]]; then
+        eval "$(/usr/local/bin/brew shellenv)"
+    fi
+fi

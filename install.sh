@@ -1,12 +1,37 @@
 #!/bin/bash
 
 # Dotfiles installation script
-# This script creates symlinks from the dotfiles repo to your home directory
+# macOS: uses Homebrew
+# Linux: uses native package managers (apt/dnf/pacman)
 
 set -e
 
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 BACKUP_DIR="$HOME/.dotfiles_backup/$(date +%Y%m%d_%H%M%S)"
+
+# Detect OS and package manager
+OS="$(uname -s)"
+case "$OS" in
+    Darwin) OS="macos" ;;
+    Linux)  OS="linux" ;;
+    *)      echo "Unsupported OS: $OS"; exit 1 ;;
+esac
+
+# Detect Linux distro
+DISTRO=""
+PKG_MANAGER=""
+if [[ "$OS" == "linux" ]]; then
+    if command -v apt-get &> /dev/null; then
+        DISTRO="debian"
+        PKG_MANAGER="apt"
+    elif command -v dnf &> /dev/null; then
+        DISTRO="fedora"
+        PKG_MANAGER="dnf"
+    elif command -v pacman &> /dev/null; then
+        DISTRO="arch"
+        PKG_MANAGER="pacman"
+    fi
+fi
 
 # Colors for output
 RED='\033[0;31m'
@@ -48,15 +73,85 @@ backup_and_link() {
     log_info "Linked $src -> $dest"
 }
 
+# ============ macOS Functions ============
+
 install_homebrew() {
     if ! command -v brew &> /dev/null; then
         log_info "Installing Homebrew..."
         /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-        eval "$(/opt/homebrew/bin/brew shellenv)"
+        eval "$(/opt/homebrew/bin/brew shellenv 2>/dev/null || /usr/local/bin/brew shellenv)"
     else
         log_info "Homebrew already installed"
     fi
 }
+
+install_macos_packages() {
+    if [[ -f "$DOTFILES_DIR/Brewfile" ]]; then
+        log_info "Installing packages from Brewfile..."
+        brew bundle --file="$DOTFILES_DIR/Brewfile"
+    fi
+    if [[ -f "$DOTFILES_DIR/Brewfile.macos" ]]; then
+        log_info "Installing macOS apps from Brewfile.macos..."
+        brew bundle --file="$DOTFILES_DIR/Brewfile.macos"
+    fi
+}
+
+# ============ Linux Functions ============
+
+install_apt_packages() {
+    log_info "Installing packages with apt..."
+    sudo apt-get update
+
+    if [[ -f "$DOTFILES_DIR/packages/apt.txt" ]]; then
+        # Read packages from file, skip comments and empty lines
+        while IFS= read -r pkg || [[ -n "$pkg" ]]; do
+            [[ "$pkg" =~ ^#.*$ || -z "$pkg" ]] && continue
+            sudo apt-get install -y "$pkg"
+        done < "$DOTFILES_DIR/packages/apt.txt"
+    else
+        # Default packages
+        sudo apt-get install -y git zsh curl neovim htop gh golang-go gnupg
+    fi
+}
+
+install_dnf_packages() {
+    log_info "Installing packages with dnf..."
+
+    if [[ -f "$DOTFILES_DIR/packages/dnf.txt" ]]; then
+        while IFS= read -r pkg || [[ -n "$pkg" ]]; do
+            [[ "$pkg" =~ ^#.*$ || -z "$pkg" ]] && continue
+            sudo dnf install -y "$pkg"
+        done < "$DOTFILES_DIR/packages/dnf.txt"
+    else
+        # Default packages
+        sudo dnf install -y git zsh curl neovim htop gh golang gnupg2
+    fi
+}
+
+install_pacman_packages() {
+    log_info "Installing packages with pacman..."
+
+    if [[ -f "$DOTFILES_DIR/packages/pacman.txt" ]]; then
+        while IFS= read -r pkg || [[ -n "$pkg" ]]; do
+            [[ "$pkg" =~ ^#.*$ || -z "$pkg" ]] && continue
+            sudo pacman -S --noconfirm "$pkg"
+        done < "$DOTFILES_DIR/packages/pacman.txt"
+    else
+        # Default packages
+        sudo pacman -Syu --noconfirm git zsh curl neovim htop github-cli go gnupg
+    fi
+}
+
+install_linux_packages() {
+    case "$PKG_MANAGER" in
+        apt)    install_apt_packages ;;
+        dnf)    install_dnf_packages ;;
+        pacman) install_pacman_packages ;;
+        *)      log_warn "Unknown package manager. Please install packages manually." ;;
+    esac
+}
+
+# ============ Common Functions ============
 
 install_oh_my_zsh() {
     if [[ ! -d "$HOME/.oh-my-zsh" ]]; then
@@ -70,29 +165,41 @@ install_oh_my_zsh() {
 install_zsh_plugins() {
     local ZSH_CUSTOM="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
 
-    # zsh-autosuggestions
     if [[ ! -d "$ZSH_CUSTOM/plugins/zsh-autosuggestions" ]]; then
         log_info "Installing zsh-autosuggestions..."
         git clone https://github.com/zsh-users/zsh-autosuggestions "$ZSH_CUSTOM/plugins/zsh-autosuggestions"
     fi
 
-    # zsh-syntax-highlighting
     if [[ ! -d "$ZSH_CUSTOM/plugins/zsh-syntax-highlighting" ]]; then
         log_info "Installing zsh-syntax-highlighting..."
         git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "$ZSH_CUSTOM/plugins/zsh-syntax-highlighting"
     fi
 
-    # autoupdate plugin for oh-my-zsh
     if [[ ! -d "$ZSH_CUSTOM/plugins/autoupdate" ]]; then
         log_info "Installing autoupdate plugin..."
         git clone https://github.com/TamCore/autoupdate-oh-my-zsh-plugins "$ZSH_CUSTOM/plugins/autoupdate"
     fi
 }
 
-install_packages() {
-    if [[ -f "$DOTFILES_DIR/Brewfile" ]]; then
-        log_info "Installing packages from Brewfile..."
-        brew bundle --file="$DOTFILES_DIR/Brewfile"
+install_nvm() {
+    if [[ ! -d "$HOME/.nvm" ]]; then
+        log_info "Installing NVM..."
+        curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
+    else
+        log_info "NVM already installed"
+    fi
+}
+
+set_default_shell() {
+    if [[ "$SHELL" != *"zsh"* ]]; then
+        log_info "Setting zsh as default shell..."
+        ZSH_PATH="$(which zsh)"
+        if [[ "$OS" == "linux" ]]; then
+            if ! grep -q "$ZSH_PATH" /etc/shells 2>/dev/null; then
+                echo "$ZSH_PATH" | sudo tee -a /etc/shells
+            fi
+        fi
+        chsh -s "$ZSH_PATH"
     fi
 }
 
@@ -126,11 +233,32 @@ link_dotfiles() {
     backup_and_link "$DOTFILES_DIR/htop/htoprc" "$HOME/.config/htop/htoprc"
 }
 
+show_help() {
+    echo "Usage: ./install.sh [OPTIONS]"
+    echo ""
+    echo "Options:"
+    echo "  --skip-packages  Skip package installation"
+    echo "  --skip-deps      Skip Oh-My-Zsh/NVM installation"
+    echo "  --links-only     Only create symlinks (skip all installations)"
+    echo "  -h, --help       Show this help message"
+    echo ""
+    echo "Platform: $OS"
+    if [[ "$OS" == "linux" ]]; then
+        echo "Distro:   $DISTRO"
+        echo "Package manager: $PKG_MANAGER"
+    fi
+}
+
 main() {
     echo ""
     echo "=================================="
     echo "  Dotfiles Installation Script"
     echo "=================================="
+    echo ""
+    log_info "Detected OS: $OS"
+    if [[ "$OS" == "linux" ]]; then
+        log_info "Detected distro: $DISTRO ($PKG_MANAGER)"
+    fi
     echo ""
 
     # Parse arguments
@@ -153,13 +281,7 @@ main() {
                 shift
                 ;;
             -h|--help)
-                echo "Usage: ./install.sh [OPTIONS]"
-                echo ""
-                echo "Options:"
-                echo "  --skip-packages  Skip Brewfile package installation"
-                echo "  --skip-deps      Skip Homebrew/Oh-My-Zsh installation"
-                echo "  --links-only     Only create symlinks (skip all installations)"
-                echo "  -h, --help       Show this help message"
+                show_help
                 exit 0
                 ;;
             *)
@@ -169,16 +291,25 @@ main() {
         esac
     done
 
+    # Install packages
+    if [[ "$SKIP_PACKAGES" == false ]]; then
+        if [[ "$OS" == "macos" ]]; then
+            install_homebrew
+            install_macos_packages
+        else
+            install_linux_packages
+        fi
+    fi
+
+    # Install dependencies (oh-my-zsh, plugins, nvm)
     if [[ "$SKIP_DEPS" == false ]]; then
-        install_homebrew
         install_oh_my_zsh
         install_zsh_plugins
+        install_nvm
+        set_default_shell
     fi
 
-    if [[ "$SKIP_PACKAGES" == false ]]; then
-        install_packages
-    fi
-
+    # Link dotfiles
     link_dotfiles
 
     echo ""

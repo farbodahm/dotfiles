@@ -1,0 +1,28 @@
+# Packages for Fedora (dnf)
+# One package per line, comments start with #
+
+# Core tools
+git
+zsh
+curl
+wget
+
+# Development
+neovim
+golang
+@development-tools
+
+# CLI utilities
+htop
+gh
+ripgrep
+fzf
+jq
+
+# GPG for git signing
+gnupg2
+
+# Optional: uncomment as needed
+# docker
+# tmux
+# tree

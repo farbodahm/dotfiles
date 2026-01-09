@@ -104,11 +104,27 @@ source $ZSH/oh-my-zsh.sh
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
 export PATH="$HOME/.local/bin:$PATH"
-eval "$(/opt/homebrew/bin/brew shellenv)"
 
+# Homebrew setup (macOS only)
+if [[ "$(uname)" == "Darwin" ]]; then
+    if [[ -f "/opt/homebrew/bin/brew" ]]; then
+        eval "$(/opt/homebrew/bin/brew shellenv)"
+    elif [[ -f "/usr/local/bin/brew" ]]; then
+        eval "$(/usr/local/bin/brew shellenv)"
+    fi
+fi
+
+# Go
 export GOPATH=$HOME/go
 export PATH=$PATH:$GOPATH/bin
 
+# NVM setup
 export NVM_DIR="$HOME/.nvm"
-[ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"  # This loads nvm
-[ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"
+if [[ -d "$NVM_DIR" ]]; then
+    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+    [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+fi
+# Homebrew NVM (macOS only)
+if [[ "$(uname)" == "Darwin" ]] && command -v brew &>/dev/null; then
+    [ -s "$(brew --prefix)/opt/nvm/nvm.sh" ] && \. "$(brew --prefix)/opt/nvm/nvm.sh"
+fi
