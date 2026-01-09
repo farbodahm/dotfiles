@@ -1,5 +1,4 @@
 # Packages for Debian/Ubuntu (apt)
-# One package per line, comments start with #
 
 # Core tools
 git
@@ -9,8 +8,20 @@ wget
 
 # Development
 neovim
-golang-go
 build-essential
+
+# Languages
+python3
+python3-pip
+python3-venv
+golang-go
+
+# DevOps
+docker.io
+terraform
+
+# Editors
+vim
 
 # CLI utilities
 htop
@@ -21,8 +32,3 @@ jq
 
 # GPG for git signing
 gnupg
-
-# Optional: uncomment as needed
-# docker.io
-# tmux
-# tree

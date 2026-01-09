@@ -1,5 +1,4 @@
 # Packages for Arch Linux (pacman)
-# One package per line, comments start with #
 
 # Core tools
 git
@@ -9,8 +8,19 @@ wget
 
 # Development
 neovim
-go
 base-devel
+
+# Languages
+python
+python-pip
+go
+
+# DevOps
+docker
+terraform
+
+# Editors
+vim
 
 # CLI utilities
 htop
@@ -21,8 +31,3 @@ jq
 
 # GPG for git signing
 gnupg
-
-# Optional: uncomment as needed
-# docker
-# tmux
-# tree
