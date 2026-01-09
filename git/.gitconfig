@@ -1,0 +1,14 @@
+# This is Git's per-user configuration file.
+[user]
+	name = Farbod Ahmadian
+	email = farbodahmadian2014@gmail.com
+	signingkey = 0BE0E182186A0BB4
+# Please adapt and uncomment the following lines:
+#	name = Farbod
+#	email = farbodahmadian2014@gmail.com
+[commit]
+	gpgsign = true
+[gpg]
+	program = gpg
+[push]
+	autoSetupRemote = true

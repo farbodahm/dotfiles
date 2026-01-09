@@ -1,0 +1,14 @@
+# OS
+.DS_Store
+
+# Sensitive files - never commit these
+*.pem
+*.key
+*credentials*
+*secrets*
+
+# Local overrides (for machine-specific settings)
+*.local
+
+# Neovim generated files
+nvim/lazy-lock.json
