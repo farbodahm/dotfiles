@@ -1,0 +1,121 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  shellcheck:
+    name: Shellcheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run ShellCheck
+        uses: ludeeus/action-shellcheck@master
+        with:
+          # Only check .sh files, not zsh configs
+          scandir: '.'
+          format: tty
+          severity: warning
+          ignore_paths: zsh
+
+  validate-configs:
+    name: Validate Configs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate JSON files
+        run: |
+          echo "Validating JSON files..."
+          for file in $(find . -name "*.json" -type f); do
+            echo "Checking $file"
+            python3 -m json.tool "$file" > /dev/null
+          done
+
+      - name: Validate YAML files
+        run: |
+          pip install pyyaml
+          echo "Validating YAML files..."
+          for file in $(find . -name "*.yml" -o -name "*.yaml" | grep -v .github); do
+            echo "Checking $file"
+            python3 -c "import yaml; yaml.safe_load(open('$file'))"
+          done
+
+      - name: Check Lua syntax
+        run: |
+          sudo apt-get update && sudo apt-get install -y lua5.4
+          echo "Checking Lua syntax..."
+          for file in $(find . -name "*.lua" -type f); do
+            echo "Checking $file"
+            luac -p "$file"
+          done
+
+  test-ubuntu:
+    name: Test Install (Ubuntu)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run install script
+        run: |
+          # Run with --links-only first to test linking logic
+          ./install.sh --links-only
+
+      - name: Verify symlinks created
+        run: |
+          test -L ~/.zshrc && echo "✓ .zshrc linked"
+          test -L ~/.zprofile && echo "✓ .zprofile linked"
+          test -L ~/.gitconfig && echo "✓ .gitconfig linked"
+          test -L ~/.config/nvim && echo "✓ nvim linked"
+          test -L ~/.config/htop/htoprc && echo "✓ htop linked"
+
+      - name: Test full install (packages + deps)
+        run: |
+          # Test package installation
+          ./install.sh --skip-deps
+        env:
+          DEBIAN_FRONTEND: noninteractive
+
+  test-macos:
+    name: Test Install (macOS)
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run install script (links only)
+        run: ./install.sh --links-only
+
+      - name: Verify symlinks created
+        run: |
+          test -L ~/.zshrc && echo "✓ .zshrc linked"
+          test -L ~/.zprofile && echo "✓ .zprofile linked"
+          test -L ~/.gitconfig && echo "✓ .gitconfig linked"
+          test -L ~/.config/nvim && echo "✓ nvim linked"
+
+      - name: Test Homebrew install
+        run: |
+          # Homebrew is pre-installed on GitHub runners
+          brew bundle --file=./Brewfile --no-lock
+        continue-on-error: true  # Don't fail if some packages unavailable
+
+  test-fedora:
+    name: Test Install (Fedora)
+    runs-on: ubuntu-latest
+    container:
+      image: fedora:latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install prerequisites
+        run: dnf install -y git sudo
+
+      - name: Run install script (links only)
+        run: ./install.sh --links-only
+
+      - name: Verify symlinks
+        run: |
+          test -L ~/.zshrc && echo "✓ .zshrc linked"
+          test -L ~/.config/nvim && echo "✓ nvim linked"
