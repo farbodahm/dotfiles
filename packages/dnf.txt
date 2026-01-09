@@ -1,5 +1,4 @@
 # Packages for Fedora (dnf)
-# One package per line, comments start with #
 
 # Core tools
 git
@@ -9,8 +8,19 @@ wget
 
 # Development
 neovim
-golang
 @development-tools
+
+# Languages
+python3
+python3-pip
+golang
+
+# DevOps
+# docker     # Install separately: https://docs.docker.com/engine/install/fedora/
+# terraform  # Install separately: https://developer.hashicorp.com/terraform/install
+
+# Editors
+vim
 
 # CLI utilities
 htop
@@ -21,8 +31,3 @@ jq
 
 # GPG for git signing
 gnupg2
-
-# Optional: uncomment as needed
-# docker
-# tmux
-# tree

@@ -16,7 +16,7 @@ jobs:
         uses: ludeeus/action-shellcheck@master
         with:
           # Only check .sh files, not zsh configs
-          scandir: '.'
+          scandir: "."
           format: tty
           severity: warning
           ignore_paths: zsh
@@ -98,8 +98,7 @@ jobs:
       - name: Test Homebrew install
         run: |
           # Homebrew is pre-installed on GitHub runners
-          brew bundle --file=./Brewfile --no-lock
-        continue-on-error: true  # Don't fail if some packages unavailable
+          brew bundle --file=./Brewfile
 
   test-fedora:
     name: Test Install (Fedora)

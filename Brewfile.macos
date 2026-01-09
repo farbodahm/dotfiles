@@ -6,7 +6,9 @@ cask "wezterm"
 # Editors
 cask "zed"
 
+# Docker Desktop
+cask "docker"
+
 # Optional: Add more macOS apps
 # cask "visual-studio-code"
-# cask "docker"
 # cask "raycast"
