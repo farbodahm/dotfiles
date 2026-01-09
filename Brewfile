@@ -1,5 +1,4 @@
-# Common packages (macOS and Linux)
-tap "homebrew/bundle"
+# Common packages (macOS)
 
 # CLI Tools
 brew "git"
@@ -14,7 +13,6 @@ brew "python"
 brew "go"
 
 # DevOps
-brew "docker"
 brew "terraform"
 
 # Editors

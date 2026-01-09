@@ -16,8 +16,8 @@ python3-pip
 golang
 
 # DevOps
-docker
-terraform
+# docker     # Install separately: https://docs.docker.com/engine/install/fedora/
+# terraform  # Install separately: https://developer.hashicorp.com/terraform/install
 
 # Editors
 vim

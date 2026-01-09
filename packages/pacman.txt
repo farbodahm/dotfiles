@@ -16,8 +16,8 @@ python-pip
 go
 
 # DevOps
-docker
-terraform
+# docker     # Install separately, then: sudo usermod -aG docker $USER
+# terraform  # Available in community repo, or: https://developer.hashicorp.com/terraform/install
 
 # Editors
 vim
