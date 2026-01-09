@@ -1,0 +1,7 @@
+[
+  {
+    "bindings": {
+      "alt-a": "editor::ToggleComments"
+    }
+  }
+]

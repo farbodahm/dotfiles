@@ -1,0 +1,28 @@
+# Packages for Arch Linux (pacman)
+# One package per line, comments start with #
+
+# Core tools
+git
+zsh
+curl
+wget
+
+# Development
+neovim
+go
+base-devel
+
+# CLI utilities
+htop
+github-cli
+ripgrep
+fzf
+jq
+
+# GPG for git signing
+gnupg
+
+# Optional: uncomment as needed
+# docker
+# tmux
+# tree
