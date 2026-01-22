@@ -20,6 +20,9 @@ golang-go
 # docker.io   # Install separately: https://docs.docker.com/engine/install/ubuntu/
 # terraform   # Install separately: https://developer.hashicorp.com/terraform/install
 
+# Text expander
+# espanso     # Install via snap: snap install espanso --classic --channel=latest/edge
+
 # Editors
 vim
 

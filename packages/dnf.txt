@@ -19,6 +19,9 @@ golang
 # docker     # Install separately: https://docs.docker.com/engine/install/fedora/
 # terraform  # Install separately: https://developer.hashicorp.com/terraform/install
 
+# Text expander
+# espanso    # Install separately: https://espanso.org/docs/install/linux/
+
 # Editors
 vim
 
