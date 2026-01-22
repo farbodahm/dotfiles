@@ -1,6 +1,6 @@
 # Dotfiles
 
-Personal configuration files for macOS and Linux using **symlinks** — editing `~/.zshrc` actually edits `dotfiles/zsh/.zshrc`, so changes are automatically tracked by git.
+Personal configuration files for macOS and Linux using symlinks; editing `~/.zshrc` actually edits `dotfiles/zsh/.zshrc`, so changes are automatically tracked by git.
 
 ## Private Files (git-crypt)
 
