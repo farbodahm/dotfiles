@@ -231,6 +231,9 @@ link_dotfiles() {
     # htop
     mkdir -p "$HOME/.config/htop"
     backup_and_link "$DOTFILES_DIR/htop/htoprc" "$HOME/.config/htop/htoprc"
+
+    # Espanso
+    backup_and_link "$DOTFILES_DIR/espanso" "$HOME/.config/espanso"
 }
 
 show_help() {

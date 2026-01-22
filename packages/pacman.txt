@@ -19,6 +19,9 @@ go
 # docker     # Install separately, then: sudo usermod -aG docker $USER
 # terraform  # Available in community repo, or: https://developer.hashicorp.com/terraform/install
 
+# Text expander
+# espanso    # Install from AUR: yay -S espanso-bin
+
 # Editors
 vim
 

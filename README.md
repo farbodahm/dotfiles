@@ -13,6 +13,7 @@ This repository uses **symlinks** to manage dotfiles. Instead of copying files t
 ```
 ~/.zshrc  →  ~/dotfiles/zsh/.zshrc
 ~/.config/nvim  →  ~/dotfiles/nvim
+~/.config/espanso  →  ~/dotfiles/espanso
 ```
 
 ## Installation

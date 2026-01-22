@@ -9,6 +9,9 @@ cask "zed"
 # Docker Desktop
 cask "docker"
 
+# Text expander
+cask "espanso"
+
 # Optional: Add more macOS apps
 # cask "visual-studio-code"
 # cask "raycast"
