@@ -39,7 +39,7 @@ jobs:
         run: |
           pip install pyyaml
           echo "Validating YAML files..."
-          for file in $(find . -name "*.yml" -o -name "*.yaml" | grep -v .github); do
+          for file in $(find . -name "*.yml" -o -name "*.yaml" | grep -v .github | grep -v espanso/match/private.yml); do
             echo "Checking $file"
             python3 -c "import yaml; yaml.safe_load(open('$file'))"
           done

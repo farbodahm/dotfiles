@@ -1,19 +1,27 @@
 # Dotfiles
 
-Personal configuration files for macOS and Linux.
+Personal configuration files for macOS and Linux using symlinks; editing `~/.zshrc` actually edits `dotfiles/zsh/.zshrc`, so changes are automatically tracked by git.
 
-## How It Works
+## Private Files (git-crypt)
 
-This repository uses **symlinks** to manage dotfiles. Instead of copying files to your home directory, the install script creates symbolic links pointing back to this repository. This means:
+Some files contain sensitive data (phone numbers, addresses) and are encrypted with [git-crypt](https://github.com/AGWA/git-crypt). They appear as binary on GitHub but decrypt automatically once unlocked.
 
-- Editing `~/.zshrc` actually edits `dotfiles/zsh/.zshrc`
-- Changes are automatically tracked by git
-- You can easily sync configs across machines
+**Encrypted files:** `espanso/match/private.yml`
 
-```
-~/.zshrc  →  ~/dotfiles/zsh/.zshrc
-~/.config/nvim  →  ~/dotfiles/nvim
-~/.config/espanso  →  ~/dotfiles/espanso
+### Unlocking on a new machine
+
+```bash
+# 1. Install git-crypt
+brew install git-crypt        # macOS
+sudo apt install git-crypt    # Ubuntu/Debian
+sudo dnf install git-crypt    # Fedora
+sudo pacman -S git-crypt      # Arch
+
+# 2. Decode key from Bitwarden (stored as base64 in Secure Note)
+echo "PASTE_BASE64_HERE" | base64 -d > ~/dotfiles-key
+
+# 3. Unlock and cleanup
+git-crypt unlock ~/dotfiles-key && rm ~/dotfiles-key
 ```
 
 ## Installation
@@ -21,143 +29,40 @@ This repository uses **symlinks** to manage dotfiles. Instead of copying files t
 ```bash
 git clone https://github.com/YOUR_USERNAME/dotfiles.git ~/dotfiles
 cd ~/dotfiles
+git-crypt unlock ~/dotfiles-key   # If you have encrypted files
 ./install.sh
 ```
 
-The script automatically detects your OS and:
-
-| macOS | Linux |
-|-------|-------|
-| Installs Homebrew | Uses apt/dnf/pacman |
-| Installs from Brewfile | Installs from packages/*.txt |
-| Installs Oh My Zsh + plugins | Installs Oh My Zsh + plugins |
-| Installs NVM | Installs NVM |
-| Sets zsh as default shell | Sets zsh as default shell |
-| Creates symlinks | Creates symlinks |
-
-### Options
+The script detects your OS and installs packages (Homebrew/apt/dnf/pacman), Oh My Zsh, NVM, and creates symlinks.
 
 ```bash
-./install.sh              # Full installation
-./install.sh --links-only # Only create symlinks
+./install.sh --links-only     # Only create symlinks
 ./install.sh --skip-packages  # Skip package installation
 ./install.sh --skip-deps      # Skip Oh-My-Zsh/NVM
-./install.sh -h               # Show help
 ```
 
-### Syncing changes between machines
+### Syncing between machines
 
-After making changes on one machine:
 ```bash
-cd ~/dotfiles
-git add -A
-git commit -m "Update zshrc aliases"
-git push
-```
+# Push changes
+git add -A && git commit -m "Update config" && git push
 
-On other machines, just pull:
-```bash
-cd ~/dotfiles
+# Pull on other machines (changes apply immediately via symlinks)
 git pull
 ```
 
-Changes apply immediately (symlinks point to the repo files).
-
 ## Adding Packages
 
-### macOS (Homebrew)
+**macOS:** Edit `Brewfile` (CLI) or `Brewfile.macos` (GUI apps), then `brew bundle`
 
-Edit `Brewfile` for CLI tools:
-```bash
-brew "ripgrep"
-brew "fzf"
-```
-
-Edit `Brewfile.macos` for GUI apps:
-```bash
-cask "visual-studio-code"
-cask "docker"
-```
-
-Install:
-```bash
-brew bundle --file=~/dotfiles/Brewfile
-brew bundle --file=~/dotfiles/Brewfile.macos
-```
-
-### Linux (apt/dnf/pacman)
-
-Edit the appropriate file in `packages/`:
-
-| Distro | File |
-|--------|------|
-| Ubuntu/Debian | `packages/apt.txt` |
-| Fedora | `packages/dnf.txt` |
-| Arch | `packages/pacman.txt` |
-
-Format (one package per line, # for comments):
-```bash
-# Development tools
-neovim
-ripgrep
-fzf
-
-# Optional
-# docker
-```
-
-Re-run install to add new packages:
-```bash
-./install.sh --skip-deps  # Skip oh-my-zsh, just install packages + links
-```
+**Linux:** Edit `packages/apt.txt`, `packages/dnf.txt`, or `packages/pacman.txt` (one package per line)
 
 ## Adding New Config Files
 
-### 1. Create a directory for the tool
-
-```bash
-mkdir ~/dotfiles/toolname
-```
-
-### 2. Copy your config file
-
-```bash
-cp ~/.toolconfig ~/dotfiles/toolname/.toolconfig
-```
-
-### 3. Update `install.sh`
-
-Add a line in the `link_dotfiles()` function:
-
-```bash
-# For files in home directory
-backup_and_link "$DOTFILES_DIR/toolname/.toolconfig" "$HOME/.toolconfig"
-
-# For files in ~/.config
-mkdir -p "$HOME/.config/toolname"
-backup_and_link "$DOTFILES_DIR/toolname/config.yml" "$HOME/.config/toolname/config.yml"
-
-# For entire directories
-backup_and_link "$DOTFILES_DIR/toolname" "$HOME/.config/toolname"
-```
-
-### 4. Commit and push
-
-```bash
-git add -A
-git commit -m "Add toolname config"
-git push
-```
-
-## Platform Notes
-
-### macOS
-- Uses Homebrew for all packages
-- GUI apps via casks in `Brewfile.macos`
-- Homebrew at `/opt/homebrew` (Apple Silicon) or `/usr/local` (Intel)
-
-### Linux
-- Uses native package managers (apt, dnf, pacman)
-- Package lists in `packages/` directory
-- GUI apps: install via native package manager, Flatpak, or AppImage
-- Supports Ubuntu, Debian, Fedora, Arch
+1. Create directory: `mkdir ~/dotfiles/toolname`
+2. Copy config: `cp ~/.toolconfig ~/dotfiles/toolname/`
+3. Add to `install.sh` in `link_dotfiles()`:
+   ```bash
+   backup_and_link "$DOTFILES_DIR/toolname/.toolconfig" "$HOME/.toolconfig"
+   ```
+4. Commit and push
