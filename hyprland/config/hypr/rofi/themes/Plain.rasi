@@ -1,0 +1,153 @@
+/* Plain: flat dark box, grey text, one thin border. Matches waybar Plain.css and wlogout. */
+
+configuration {
+    modi:                  "drun,filebrowser,run,window";
+    show-icons:            true;
+    display-drun:          "apps";
+    display-filebrowser:   "files";
+    display-run:           "run";
+    display-window:        "window";
+    drun-display-format:   "{name}";
+    window-format:         "{w}  {c}  {t}";
+    hover-select:          true;
+    me-select-entry:       "MouseSecondary";
+    me-accept-entry:       "MousePrimary";
+    font:                  "JetBrains Mono 12";
+}
+
+* {
+    bg:          #151515;
+    bg-alt:      #1c1c1c;
+    bg-sel:      #262626;
+    line:        #333333;
+    fg:          #b8b8b8;
+    fg-dim:      #6a6a6a;
+    fg-bright:   #e6e6e6;
+    urgent:      #d7875f;
+
+    background-color: transparent;
+    text-color:       @fg;
+    border-color:     @line;
+    font:             "JetBrains Mono 12";
+}
+
+window {
+    location:         center;
+    anchor:           center;
+    width:            560px;
+    background-color: @bg;
+    border:           1px solid;
+    border-color:     @line;
+    border-radius:    4px;
+    padding:          0px;
+}
+
+mainbox {
+    spacing:  0px;
+    children: [ "inputbar", "message", "listview", "mode-switcher" ];
+}
+
+inputbar {
+    padding:      10px 14px;
+    spacing:      10px;
+    border:       0px 0px 1px 0px;
+    border-color: @line;
+    children:     [ "entry" ];
+}
+
+prompt {
+    text-color: @fg-dim;
+}
+
+entry {
+    placeholder:       "Search";
+    placeholder-color: @fg-dim;
+    text-color:        @fg-bright;
+    cursor:            text;
+}
+
+message {
+    padding:      8px 14px;
+    border:       0px 0px 1px 0px;
+    border-color: @line;
+}
+
+textbox {
+    text-color: @fg;
+}
+
+listview {
+    lines:        8;
+    columns:      1;
+    fixed-height: true;
+    cycle:        true;
+    scrollbar:    false;
+    spacing:      0px;
+    padding:      4px 0px;
+}
+
+element {
+    padding: 6px 14px;
+    spacing: 10px;
+}
+
+element normal.normal,
+element alternate.normal {
+    background-color: transparent;
+    text-color:       @fg;
+}
+
+element normal.active,
+element alternate.active {
+    text-color: @fg-bright;
+}
+
+element normal.urgent,
+element alternate.urgent,
+element selected.urgent {
+    text-color: @urgent;
+}
+
+element selected.normal,
+element selected.active {
+    background-color: @bg-sel;
+    text-color:       @fg-bright;
+}
+
+element-icon {
+    size:             18px;
+    background-color: transparent;
+    cursor:           inherit;
+}
+
+element-text {
+    background-color: transparent;
+    text-color:       inherit;
+    vertical-align:   0.5;
+    cursor:           inherit;
+    font:             "JetBrains Mono 12";
+}
+
+mode-switcher {
+    border:       1px 0px 0px 0px;
+    border-color: @line;
+    spacing:      0px;
+}
+
+button {
+    padding:    7px 0px;
+    text-color: @fg-dim;
+    cursor:     pointer;
+}
+
+button selected {
+    background-color: @bg-alt;
+    text-color:       @fg-bright;
+}
+
+error-message {
+    padding:          12px 14px;
+    background-color: @bg;
+    border:           1px solid;
+    border-color:     @line;
+}

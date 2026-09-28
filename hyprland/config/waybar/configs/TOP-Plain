@@ -1,0 +1,126 @@
+// Plain top bar: workspaces + title | clock | status.
+// Self-contained on purpose (no includes), so the stock module bank can't leak in.
+{
+"layer": "top",
+"position": "top",
+"height": 28,
+"spacing": 0,
+"exclusive": true,
+"fixed-center": true,
+
+"modules-left": ["hyprland/workspaces", "hyprland/window"],
+"modules-center": ["clock"],
+"modules-right": ["tray", "hyprland/language", "network", "pulseaudio", "backlight", "battery", "power-profiles-daemon", "custom/power"],
+
+"hyprland/workspaces": {
+	"all-outputs": false,
+	"sort-by-number": true,
+	"show-special": false,
+	"on-click": "activate",
+	"on-scroll-up": "hyprctl dispatch workspace e+1",
+	"on-scroll-down": "hyprctl dispatch workspace e-1",
+	"persistent-workspaces": { "eDP-1": [1, 2, 3, 4, 5], "DP-1": [6, 7, 8, 9, 10] },
+	"format": "{name}"
+},
+
+"hyprland/window": {
+	"format": "{title}",
+	"max-length": 60,
+	"separate-outputs": true,
+	"rewrite": { "": "" }
+},
+
+"clock": {
+	"timezone": "Europe/Amsterdam",
+	"interval": 30,
+	"format": "{:%a %d %b  %H:%M}",
+	"tooltip-format": "<tt>{calendar}</tt>",
+	"calendar": {
+		"mode": "month",
+		"weeks-pos": "left",
+		"format": {
+			"weeks": "<span color='#707070'>{:%V}</span>",
+			"weekdays": "<span color='#909090'>{}</span>",
+			"today": "<b><u>{}</u></b>"
+		}
+	},
+	"actions": {
+		"on-scroll-up": "shift_up",
+		"on-scroll-down": "shift_down"
+	}
+},
+
+"tray": {
+	"icon-size": 14,
+	"spacing": 8
+},
+
+"hyprland/language": {
+	"format": "{short}",
+	"on-click": "$HOME/.config/hypr/scripts/KeyboardLayout.sh switch"
+},
+
+"network": {
+	"format-wifi": "{essid}",
+	"format-ethernet": "eth",
+	"format-linked": "no ip",
+	"format-disconnected": "offline",
+	"tooltip-format-wifi": "{essid}  {signalStrength}%  {ipaddr}",
+	"tooltip-format-ethernet": "{ifname}  {ipaddr}",
+	"max-length": 20,
+	"on-click": "$HOME/.config/hypr/scripts/WaybarScripts.sh --nmtui"
+},
+
+"bluetooth": {
+	"format": "",
+	"format-disabled": "",
+	"format-off": "",
+	"format-connected": "bt {device_alias}",
+	"tooltip-format-connected": "{device_enumerate}",
+	"tooltip-format-enumerate-connected": "{device_alias}",
+	"on-click": "blueman-manager"
+},
+
+"pulseaudio": {
+	"format": "vol {volume}%",
+	"format-bluetooth": "vol {volume}%",
+	"format-muted": "vol muted",
+	"scroll-step": 5,
+	"on-click": "$HOME/.config/hypr/scripts/Volume.sh --toggle",
+	"on-click-right": "pavucontrol -t 3",
+	"tooltip-format": "{desc}"
+},
+
+"backlight": {
+	"format": "bri {percent}%",
+	"on-scroll-up": "$HOME/.config/hypr/scripts/Brightness.sh --inc",
+	"on-scroll-down": "$HOME/.config/hypr/scripts/Brightness.sh --dec",
+	"tooltip": false
+},
+
+"battery": {
+	"states": { "warning": 25, "critical": 12 },
+	"format": "bat {capacity}%",
+	"format-charging": "bat {capacity}%+",
+	"format-plugged": "bat {capacity}%",
+	"format-full": "bat full",
+	"tooltip-format": "{timeTo}  {power:.1f}W"
+},
+
+"power-profiles-daemon": {
+	"format": "{icon}",
+	"format-icons": {
+		"power-saver": "saver",
+		"balanced": "bal",
+		"performance": "perf",
+		"default": "bal"
+	},
+	"tooltip-format": "power profile: {profile}\nclick to cycle"
+},
+
+"custom/power": {
+	"format": "⏻",
+	"tooltip": false,
+	"on-click": "$HOME/.config/hypr/scripts/Wlogout.sh"
+}
+}

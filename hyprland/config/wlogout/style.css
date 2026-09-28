@@ -1,0 +1,47 @@
+/* Plain: dark scrim, flat tiles, thin monochrome icons. Matches waybar Plain.css. */
+
+* {
+	font-family: "JetBrains Mono", "JetBrainsMono Nerd Font", monospace;
+	background-image: none;
+	box-shadow: none;
+	text-shadow: none;
+	transition: none;
+}
+
+window {
+	background-color: rgba(12, 12, 12, 0.82);
+}
+
+button {
+	color: #8a8a8a;
+	font-size: 13px;
+	background-color: transparent;
+	background-repeat: no-repeat;
+	background-position: center 38%;
+	background-size: 36px 36px;
+	border: 1px solid transparent;
+	border-radius: 6px;
+	outline-style: none;
+	padding-bottom: 14px;
+}
+
+button:focus,
+button:hover {
+	color: #e6e6e6;
+	background-color: #1c1c1c;
+	border-color: #2e2e2e;
+}
+
+#lock      { background-image: image(url("./icons/plain/lock.png")); }
+#reboot    { background-image: image(url("./icons/plain/reboot.png")); }
+#shutdown  { background-image: image(url("./icons/plain/shutdown.png")); }
+#logout    { background-image: image(url("./icons/plain/logout.png")); }
+#suspend   { background-image: image(url("./icons/plain/suspend.png")); }
+#hibernate { background-image: image(url("./icons/plain/hibernate.png")); }
+
+#lock:focus,      #lock:hover      { background-image: image(url("./icons/plain/lock-hover.png")); }
+#reboot:focus,    #reboot:hover    { background-image: image(url("./icons/plain/reboot-hover.png")); }
+#shutdown:focus,  #shutdown:hover  { background-image: image(url("./icons/plain/shutdown-hover.png")); }
+#logout:focus,    #logout:hover    { background-image: image(url("./icons/plain/logout-hover.png")); }
+#suspend:focus,   #suspend:hover   { background-image: image(url("./icons/plain/suspend-hover.png")); }
+#hibernate:focus, #hibernate:hover { background-image: image(url("./icons/plain/hibernate-hover.png")); }

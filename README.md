@@ -51,6 +51,10 @@ git add -A && git commit -m "Update config" && git push
 git pull
 ```
 
+## Hyprland (Fedora)
+
+`hyprland/` overrides parts of [KoolDots](https://github.com/LinuxBeginnings/Fedora-Hyprland), so install KoolDots first. Then `./install.sh` links the files into `~/.config`, and `./install.sh --hyprland` also installs the packages, the SDDM login screen and the i8042 kernel arguments (needs sudo, reboot afterwards).
+
 ## Adding Packages
 
 **macOS:** Edit `Brewfile` (CLI) or `Brewfile.macos` (GUI apps), then `brew bundle`
