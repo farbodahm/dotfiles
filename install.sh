@@ -58,11 +58,13 @@ backup_and_link() {
     # Create parent directory if needed
     mkdir -p "$(dirname "$dest")"
 
-    # Backup existing file/directory if it exists and is not a symlink
+    # Backup existing file/directory if it exists and is not a symlink.
+    # Keep the path relative to $HOME so files with the same name don't clash.
     if [[ -e "$dest" && ! -L "$dest" ]]; then
-        mkdir -p "$BACKUP_DIR"
-        log_warn "Backing up existing $dest to $BACKUP_DIR"
-        mv "$dest" "$BACKUP_DIR/"
+        local backup="$BACKUP_DIR/${dest#"$HOME"/}"
+        mkdir -p "$(dirname "$backup")"
+        log_warn "Backing up existing $dest to $backup"
+        mv "$dest" "$backup"
     elif [[ -L "$dest" ]]; then
         log_info "Removing existing symlink $dest"
         rm "$dest"
@@ -234,6 +236,63 @@ link_dotfiles() {
 
     # Espanso
     backup_and_link "$DOTFILES_DIR/espanso" "$HOME/.config/espanso"
+
+    # Hyprland (Linux only, on top of KoolDots)
+    if [[ "$OS" == "linux" ]]; then
+        link_hyprland
+    fi
+}
+
+# ============ Hyprland Functions ============
+# These files override parts of KoolDots (https://github.com/LinuxBeginnings/Fedora-Hyprland),
+# so run the KoolDots installer first.
+
+link_hyprland() {
+    if [[ ! -d "$HOME/.config/hypr/UserConfigs" ]]; then
+        log_warn "KoolDots not found in ~/.config/hypr, skipping Hyprland configs"
+        return
+    fi
+
+    log_info "Linking Hyprland configs..."
+    local src
+    while IFS= read -r -d '' src; do
+        backup_and_link "$src" "$HOME/.config/${src#"$DOTFILES_DIR/hyprland/config/"}"
+    done < <(find "$DOTFILES_DIR/hyprland/config" -type f -print0)
+
+    # Active waybar layout and style
+    ln -sfn "$HOME/.config/waybar/configs/TOP-Plain" "$HOME/.config/waybar/config"
+    ln -sfn "$HOME/.config/waybar/style/Plain.css" "$HOME/.config/waybar/style.css"
+
+    # Lock screen wallpaper used by hyprlock.conf
+    backup_and_link "$DOTFILES_DIR/hyprland/wallpapers/nature-high-fens-forest.jpg" \
+        "$HOME/Pictures/wallpapers/nature-high-fens-forest.jpg"
+}
+
+setup_hyprland_system() {
+    if [[ "$PKG_MANAGER" != "dnf" ]]; then
+        log_warn "Hyprland system setup is for Fedora only, skipping"
+        return
+    fi
+
+    # power-profiles-daemon: waybar power profile module
+    # jetbrains-mono-fonts: font used by kitty, waybar, rofi, wlogout and hyprlock
+    log_info "Installing Hyprland packages with dnf..."
+    sudo dnf install -y power-profiles-daemon jetbrains-mono-fonts grubby
+    sudo systemctl enable --now power-profiles-daemon
+
+    # SDDM login screen: plain clock + password field, same look as hyprlock
+    local theme="/usr/share/sddm/themes/simple_sddm_2"
+    if [[ -d "$theme" ]]; then
+        log_info "Installing plain SDDM greeter into $theme"
+        sudo install -m 644 "$DOTFILES_DIR/hyprland/sddm/simple_sddm_2/Main.qml" "$theme/Main.qml"
+        sudo install -D -m 644 "$DOTFILES_DIR/hyprland/sddm/simple_sddm_2/Backgrounds/plain.jpg" "$theme/Backgrounds/plain.jpg"
+    else
+        log_warn "SDDM theme simple_sddm_2 not found, skipping greeter"
+    fi
+
+    # Slimbook: the internal keyboard stops working after resume from s2idle without these
+    log_info "Adding i8042 kernel arguments (takes effect after reboot)"
+    sudo grubby --update-kernel=ALL --args="i8042.reset i8042.nomux i8042.nopnp i8042.noloop"
 }
 
 show_help() {
@@ -243,6 +302,7 @@ show_help() {
     echo "  --skip-packages  Skip package installation"
     echo "  --skip-deps      Skip Oh-My-Zsh/NVM installation"
     echo "  --links-only     Only create symlinks (skip all installations)"
+    echo "  --hyprland       Fedora Hyprland system setup (packages, SDDM greeter, kernel args)"
     echo "  -h, --help       Show this help message"
     echo ""
     echo "Platform: $OS"
@@ -267,6 +327,7 @@ main() {
     # Parse arguments
     SKIP_PACKAGES=false
     SKIP_DEPS=false
+    HYPRLAND=false
 
     while [[ $# -gt 0 ]]; do
         case $1 in
@@ -281,6 +342,10 @@ main() {
             --links-only)
                 SKIP_PACKAGES=true
                 SKIP_DEPS=true
+                shift
+                ;;
+            --hyprland)
+                HYPRLAND=true
                 shift
                 ;;
             -h|--help)
@@ -310,6 +375,11 @@ main() {
         install_zsh_plugins
         install_nvm
         set_default_shell
+    fi
+
+    # Hyprland system setup (needs sudo)
+    if [[ "$HYPRLAND" == true ]]; then
+        setup_hyprland_system
     fi
 
     # Link dotfiles
