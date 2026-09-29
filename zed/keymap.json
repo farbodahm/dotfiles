@@ -1,7 +1,8 @@
 [
   {
     "bindings": {
-      "alt-a": "editor::ToggleComments"
+      "alt-a": "editor::ToggleComments",
+      "cmd-right": "editor::AcceptNextWordEditPrediction"
     }
   }
 ]
