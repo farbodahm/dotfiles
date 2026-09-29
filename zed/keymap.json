@@ -2,7 +2,7 @@
   {
     "bindings": {
       "alt-a": "editor::ToggleComments",
-      "cmd-right": "editor::AcceptNextWordEditPrediction",
-    },
-  },
+      "cmd-right": "editor::AcceptNextWordEditPrediction"
+    }
+  }
 ]
