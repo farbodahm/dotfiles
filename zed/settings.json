@@ -1,27 +1,79 @@
 {
+  "cli_default_open_behavior": "existing_window",
+  "edit_predictions": {
+    "copilot": {
+      "enable_next_edit_suggestions": true,
+    },
+    "provider": "copilot",
+  },
+  "agent_servers": {
+    "gemini": {
+      "type": "registry",
+    },
+    "github-copilot-cli": {
+      "type": "registry",
+    },
+    "claude-acp": {
+      "default_config_options": {
+        "mode": "bypassPermissions",
+        "effort": "high",
+        "model": "opus[1m]"
+      },
+      "type": "registry",
+    },
+  },
+  "project_panel": {
+    "dock": "left",
+  },
+  "outline_panel": {
+    "dock": "right",
+  },
+  "collaboration_panel": {
+    "dock": "right",
+  },
+  "git_panel": {
+    "dock": "right",
+  },
+  "agent": {
+    "tool_permissions": {
+      "tools": {
+        "terminal": {
+          "default": "allow"
+        }
+      }
+    },
+    "sidebar_side": "right",
+    "dock": "right",
+    "default_model": {
+      "effort": "high",
+      "provider": "anthropic",
+      "model": "claude-opus-5-5",
+      "enable_thinking": true,
+    },
+    "single_file_review": true,
+    "favorite_models": [],
+    "model_parameters": [],
+  },
   "vim_mode": true,
   "icon_theme": {
     "mode": "system",
     "light": "Zed (Default)",
-    "dark": "Zed (Default)"
+    "dark": "Zed (Default)",
   },
   "ui_font_size": 16,
   "buffer_font_size": 15,
   "theme": {
     "mode": "system",
     "light": "One Light",
-    "dark": "One Dark"
+    "dark": "One Dark",
   },
   "tabs": {
-    "file_icons": true
+    "file_icons": true,
   },
   "buffer_font_features": {
-    "calt": false
+    "calt": false,
   },
   "title_bar": {
-    "show_branch_name": true
+    "show_branch_name": true,
   },
-  "features": {
-    "edit_prediction_provider": "copilot"
-  }
 }
